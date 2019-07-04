@@ -47,6 +47,9 @@ mqtt:
   username: !secret mqtt_user
   password: !secret mqtt_passwd
 
+wemo:
+  discovery: true
+
 # Text to speech
 tts:
   - platform: google_translate
