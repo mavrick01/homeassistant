@@ -1,0 +1,458 @@
+title: Home
+resources:
+  - url: /local/power-wheel-card.js?v=1
+    type: module
+  - url: /local/mini-graph-card-bundle.js?v=0.4.3
+    type: module
+  - url: /local/monster-card.js?v=1
+    type: module
+
+views:
+  - title: Home
+    path: default_view    
+    badges:
+      - binary_sensor.router_router
+      - binary_sensor.diningroom_door_contact
+      - person.marc
+      - sensor.time
+      - sun.sun
+      - binary_sensor.presence_jill
+      - binary_sensor.presence_jimmy
+      - binary_sensor.presence_marc
+      - binary_sensor.presence_phoebe
+      - binary_sensor.presence_traci
+    cards:
+      - cards:
+          - cards:
+              - entities:
+                  - entity: binary_sensor.garage_door_contact
+                  - entity: sensor.outside_temp_sensor_temperature
+                  - entity: sensor.outside_temp_sensor_humidity
+                  - entity: sensor.outside_temp_sensor_pressure
+                show_header_toggle: false
+                title: Outside
+                type: entities
+              - entities:
+                  - entity: binary_sensor.front_door_contact
+                  - entity: sensor.lounge_temp_sensor_temperature
+                  - entity: sensor.lounge_temp_sensor_humidity
+                  - entity: sensor.lounge_temp_sensor_pressure
+                show_header_toggle: false
+                title: Living Room
+                type: entities
+            type: horizontal-stack
+          - cards:
+              - entities:
+                  - entity: binary_sensor.study_door_contact
+                  - entity: sensor.study_temp_sensor_temperature
+                  - entity: sensor.study_temp_sensor_humidity
+                  - entity: sensor.study_temp_sensor_pressure
+                show_header_toggle: false
+                title: Study
+                type: entities
+              - entities:
+                  - entity: binary_sensor.snug_door_contact
+                  - entity: sensor.spare_temp_sensor_temperature
+                  - entity: sensor.spare_temp_sensor_humidity
+                  - entity: sensor.spare_temp_sensor_pressure
+                show_header_toggle: false
+                title: Snug
+                type: entities
+            type: horizontal-stack
+        type: vertical-stack
+      - entities:
+          - entity: binary_sensor.pir_sensor_occupancy
+          - entity: sensor.pir_sensor_illuminance
+          - entity: sensor.motion_sensor_action
+        show_header_toggle: false
+        title: Study
+        type: entities
+      - entity: weather.home
+        type: weather-forecast
+      - type: vertical-stack
+        cards:
+          - type: picture-entity
+            title: Front Garden
+            show_info: false
+            entity: camera.ipcam
+          - type: horizontal-stack
+            cards:
+              - type: entities
+                entities:
+                  - cover.garage_door
+                  - light.snug_overhead
+                  - light.snug_standing
+                
+            
+        
+
+  - title: Garden
+    icon: mdi:water-pump
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+        - type: glance
+          title: Valve Status
+          entities:
+            - entity: switch.irrigation_station_1_valve
+              tap_action:
+                action: toggle
+            - entity: switch.irrigation_station_2_valve
+              tap_action:
+                action: toggle
+            - entity: switch.irrigation_station_3_valve
+              tap_action:
+                action: toggle
+            - entity: switch.irrigation_station_4_valve
+              tap_action:
+                action: toggle
+        - type: horizontal-stack 
+          cards:
+            - type: entities
+              title: Program 1
+              show_header_toggle: false
+              entities:
+                - entity: input_boolean.irrigation_program1_enable
+                - entity: script.irrigation_program1_run
+                  name: Run
+                - entity: input_datetime.irrigation_program1_start_time
+                  name: Start Tiime
+                - entity: group.irrigation_program1_watering_days
+            - type: entities
+              title: P1 - Times
+              show_header_toggle: false
+              entities:
+                  - entity: input_number.irrigation_program1_station1_run_time
+                    name: Station 1
+                  - entity: input_number.irrigation_program1_station2_run_time
+                    name: Station 2
+                  - entity: input_number.irrigation_program1_station3_run_time
+                    name: Station 3
+                  - entity: input_number.irrigation_program1_station4_run_time
+                    name: Station 4
+        - type: horizontal-stack
+          cards:
+            - type: entities
+              title: Program 2
+              show_header_toggle: false
+              cards:
+              entities:
+                  - entity: input_boolean.irrigation_program2_enable
+                  - entity: script.irrigation_program2_run
+                    name: Run
+                  - entity: input_datetime.irrigation_program2_start_time
+                    name: Start Tiime
+                  - entity: group.irrigation_program2_watering_days
+            - type: entities
+              title: P2 - Times
+              show_header_toggle: false
+              cards:
+              entities:
+                  - entity: input_number.irrigation_program2_station1_run_time
+                    name: Station 1
+                  - entity: input_number.irrigation_program2_station2_run_time
+                    name: Station 2
+                  - entity: input_number.irrigation_program2_station3_run_time
+                    name: Station 3
+                  - entity: input_number.irrigation_program2_station4_run_time
+                    name: Station 4
+
+  - title: Solar
+    icon: mdi:solar-power
+    badges:
+      - sensor.solar_production
+      - sensor.solar_consumption
+      - sensor.solar_netusage
+    cards:
+      - type: custom:power-wheel-card
+        solar_power_entity: sensor.solar_production
+        grid_power_consumption_entity: sensor.solar_consumption
+        grid_power_production_entity: sensor.solar_netusage
+      - type: history-graph
+        title: 'Solar Overview'
+        refresh_interval: 300
+        entities:
+          - entity: sensor.solar_production
+            name: 'Solar Production'
+          - entity: sensor.solar_consumption
+            name: 'Grid Consumption'
+          - entity: sensor.solar_netusage
+            name: 'Exported'
+        
+  - title: GARDEN2
+    icon: mdi:water-percent
+    badges: []
+    cards:
+      - cards:
+          - cards:
+              - entities:
+                  - entity: input_boolean.irrigation_program1_enable
+                  - entity: script.irrigation_program1_run
+                    name: Run
+                  - entity: input_datetime.irrigation_program1_start_time
+                    name: Start Tiime
+                  - entity: group.irrigation_program1_watering_days
+                show_header_toggle: false
+                title: Program 1
+                type: entities
+              - entities:
+                  - entity: input_number.irrigation_program1_station1_run_time
+                    name: Station 1
+                  - entity: input_number.irrigation_program1_station2_run_time
+                    name: Station 2
+                  - entity: input_number.irrigation_program1_station3_run_time
+                    name: Station 3
+                  - entity: input_number.irrigation_program1_station4_run_time
+                    name: Station 4
+                show_header_toggle: false
+                title: Times
+                type: entities
+            type: horizontal-stack
+          - cards:
+              - entity: binary_sensor.program1_monday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Mon
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_monday
+                type: entity-button
+              - entity: binary_sensor.program1_tuesday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Tues
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_tuesday
+                type: entity-button
+              - entity: binary_sensor.program1_wednesday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Wed
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_wednesday
+                type: entity-button
+              - entity: binary_sensor.program1_thursday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Thurs
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_thursday
+                type: entity-button
+              - entity: binary_sensor.program1_friday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Fri
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_friday
+                type: entity-button
+              - entity: binary_sensor.program1_saturday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Sat
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_saturday
+                type: entity-button
+              - entity: binary_sensor.program1_sunday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Sun
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program1_sunday
+                type: entity-button
+            type: horizontal-stack
+        type: vertical-stack
+      - cards:
+          - cards:
+              - entities:
+                  - entity: input_boolean.irrigation_program2_enable
+                  - entity: script.irrigation_program1_run
+                    name: Run
+                  - entity: input_datetime.irrigation_program2_start_time
+                    name: Start Tiime
+                  - entity: group.irrigation_program2_watering_days
+                show_header_toggle: false
+                title: Program 2
+                type: entities
+              - entities:
+                  - entity: input_number.irrigation_program2_station1_run_time
+                    name: Station 1
+                  - entity: input_number.irrigation_program2_station2_run_time
+                    name: Station 2
+                  - entity: input_number.irrigation_program2_station3_run_time
+                    name: Station 3
+                  - entity: input_number.irrigation_program2_station4_run_time
+                    name: Station 4
+                show_header_toggle: false
+                title: Times
+                type: entities
+            type: horizontal-stack
+          - cards:
+              - entity: binary_sensor.program2_monday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Mon
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_monday
+                type: entity-button
+              - entity: binary_sensor.program2_tuesday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Tues
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_tuesday
+                type: entity-button
+              - entity: binary_sensor.program2_wednesday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Wed
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_wednesday
+                type: entity-button
+              - entity: binary_sensor.program2_thursday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Thurs
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_thursday
+                type: entity-button
+              - entity: binary_sensor.program2_friday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Fri
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_friday
+                type: entity-button
+              - entity: binary_sensor.program2_saturday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Sat
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_saturday
+                type: entity-button
+              - entity: binary_sensor.program2_sunday
+                hold_action:
+                  action: more-info
+                icon_height: 20px
+                name: Sun
+                show_icon: true
+                show_name: true
+                tap_action:
+                  action: call-service
+                  service: input_boolean.toggle
+                  service_data:
+                    entity_id: input_boolean.irrigation_program2_sunday
+                type: entity-button
+            type: horizontal-stack
+        type: vertical-stack 
+
+  - title: PlayArea
+    icon: mdi:atom
+    badges: []
+    cards:
+    - type: custom:monster-card
+      show_empty: false
+      card:
+        type: entities
+        title: "Low Battery Systems"
+      filter:
+        include:
+          - entity_id: sensor.*.battery
+            attributes:
+              battery: '< 50'
+    - type: custom:mini-graph-card
+      icon: mdi:server
+      name: "Grid Consumption"
+      entities:
+      - sensor.solar_consumption
+      line_color: red
+    - type: custom:mini-graph-card
+      icon: mdi:server
+      entities:
+      - sensor.solar_production
+      line_color: yellow
+      name: "Solar Production"
+    - type: custom:mini-graph-card
+      icon: mdi:server
+      entities:
+      - sensor.solar_netusage      
+      name: "Solar Export"
+      line_color: green
+    

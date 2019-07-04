@@ -1,0 +1,10 @@
+- id: '1561780095132'
+  alias: ITTF EVENT
+  trigger:
+  - event_data: { action: call_service }
+    event_type: ifttt_webhook_received
+    platform: event
+  action:
+    service_template: '{{ trigger.event.data.service }}'
+    data_template: 
+      entity_id: '{{ trigger.event.data.entity_id }}'  

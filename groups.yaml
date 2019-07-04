@@ -1,0 +1,9 @@
+presence:
+    view: no
+    entities:
+      - binary_sensor.presence_jill
+      - binary_sensor.presence_jimmy
+      - binary_sensor.presence_marc
+      - binary_sensor.presence_phoebe
+      - binary_sensor.presence_traci
+

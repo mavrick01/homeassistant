@@ -1,0 +1,187 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Include customizations and all my packages
+
+homeassistant:
+  customize: !include customize.yaml
+  packages: !include_dir_named packages/
+
+# Include themes
+frontend: 
+  themes: !include themes.yaml
+
+# turn on lovelace ui-lovelace.yaml file
+lovelace:
+  mode: yaml
+
+# Define the what goes into the database and where it is
+recorder:
+  purge_keep_days: 5
+  db_url: sqlite:///sqlsvr/home-assistant_v2.db
+  exclude:
+    domains:
+      - automation
+      - weblink
+      - updater
+    entities:
+      - sun.sun # Don't record sun data
+      - sensor.last_boot # Comes from 'systemmonitor' sensor platform
+      - sensor.date
+      - sensor.time
+
+mqtt:
+  discovery: true
+  broker: !secret mqtt_broker
+  username: !secret mqtt_user
+  password: !secret mqtt_passwd
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# Add the Camera
+camera:
+  - platform: onvif
+    name: "ipcam"
+    host: ipcam
+    port: 8080
+    username: !secret ipcam_user
+    password: !secret ipcam_passwd
+
+# Add Ring system - not getting much from it
+ring:
+  username: !secret ring_user
+  password: !secret ring_passwd
+
+homekit:
+  filter:
+    include_entities:
+      - binary_sensor.presence_jill
+      - binary_sensor.presence_jimmy
+      - binary_sensor.presence_marc
+      - binary_sensor.presence_phoebe
+      - binary_sensor.presence_traci
+  
+
+# Building a toggle for presence detection. IFTTT changes this object
+input_boolean:
+  jimmy_home:
+    name: "Jimmy Home"
+    icon: mdi:run
+  phoebe_home:
+    name: "Phoebe Home"
+  jill_home:
+    name: "Jill Home"
+  traci_home:
+    name: "Traci Home"
+  marc_home:
+    name: "Marc Home"
+
+# This is the actual prescense system
+
+binary_sensor:
+  - platform: template
+    sensors:
+      presence_jimmy:
+        friendly_name: "Jimmy"
+        value_template: "{{ is_state('input_boolean.jimmy_home', 'on')}}"
+        device_class: presence
+      presence_phoebe:
+        friendly_name: "Phoebe"
+        value_template: "{{ is_state('input_boolean.phoebe_home', 'on')}}"
+        device_class: presence
+      presence_jill:
+        friendly_name: "Jill"
+        value_template: "{{ is_state('input_boolean.jill_home', 'on')}}"
+        device_class: presence
+      presence_traci:
+        friendly_name: "Traci"
+        value_template: "{{ is_state('input_boolean.traci_home', 'on')}}"
+        device_class: presence
+      presence_marc:
+        friendly_name: "Marc"
+        value_template: "{{ is_state('input_boolean.marc_home', 'on')}}"
+        device_class: presence
+
+# Adds the time
+sensor:
+  - platform: time_date
+    display_options:
+      - 'time'
+
+# Adds the output from the Solar system, had to hack it in node-red as the plug-in module does not work correctly
+
+  - platform: mqtt
+    name: solar_production
+    unit_of_measurement: 'W'
+    state_topic: "solar/attributes"
+    value_template: '{{ value_json.production }}'
+#    json_attributes: 
+#      - production
+#      - consumption
+#      - netusage
+  - platform: mqtt
+    name: solar_consumption
+    unit_of_measurement: 'W'
+    state_topic: "solar/attributes"
+    value_template: '{{ value_json.consumption }}'
+  - platform: mqtt
+    name: solar_netusage
+    unit_of_measurement: 'W'
+    state_topic: "solar/attributes"
+    value_template: '{{ value_json.netusage }}'
+
+# This is the garage door. Tasmota sends 1 when the garage is closed on cmnd/GarageLED/POWER2, but it uses  PulseTime1 10 to ensure the switch toggles when set
+cover:
+  - platform: mqtt
+    name: "Garage Door"
+    state_topic: "cmnd/GarageLED/POWER2"
+    command_topic: "cmnd/GarageDoor/POWER"
+    availability_topic: "tele/GarageDoor/LWT"
+    qos: 1
+    payload_open: "ON"
+    payload_close: "ON"
+    payload_stop: "ON"
+    state_open: "0"
+    state_closed: "1"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    optimistic: false
+    retain: true
+    device_class: garage
+
+# Added the Tasmota lights. For some reason they go insane when I set them to HA auto discovery.
+
+light:
+  - platform: mqtt
+    name: Snug Overhead
+    command_topic: "snugtouch/cmnd/POWER1"
+    state_topic: "snugtouch/stat/POWER1"
+    availability_topic: "snugtouch/tele/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+  - platform: mqtt
+    name: Snug Standing
+    command_topic: "snugtouch/cmnd/POWER2"
+    state_topic: "snugtouch/stat/POWER2"
+    availability_topic: "snugtouch/tele/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml

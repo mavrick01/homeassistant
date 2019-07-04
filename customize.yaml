@@ -1,0 +1,68 @@
+group.irrigation_program1_watering_days:
+  hidden: true
+group.irrigation_program2_watering_days:
+  hidden: true
+input_boolean.jill_home:
+  hidden: true
+input_boolean.jimmy_home:
+  hidden: true
+input_boolean.marc_home:
+  hidden: true
+input_boolean.phoebe_home:
+  hidden: true
+input_boolean.traci_home:
+  hidden: true
+sensor.button1_battery:
+  hidden: true
+sensor.button1_linkquality:
+  hidden: true
+sensor.diningroom_door_battery:
+  hidden: true
+sensor.diningroom_door_linkquality:
+  hidden: true
+sensor.front_door_battery:
+  hidden: true
+sensor.front_door_linkquality:
+  hidden: true
+sensor.garage_door_battery:
+  hidden: true
+sensor.garage_door_linkquality:
+  hidden: true
+sensor.lounge_temp_sensor_battery:
+  hidden: true
+sensor.lounge_temp_sensor_linkquality:
+  hidden: true
+sensor.motion_sensor_battery:
+  hidden: true
+sensor.outside_temp_sensor_battery:
+  hidden: true
+sensor.outside_temp_sensor_linkquality:
+  hidden: true
+sensor.snug_door_battery:
+  hidden: true
+sensor.study_temp_sensor_linkquality:
+  hidden: true
+sensor.snug_door_linkquality:
+  hidden: true
+sensor.study_door_battery:
+  hidden: true
+sensor.study_door_linkquality:
+  hidden: true
+sensor.study_temp_sensor_battery:
+  hidden: true
+sensor.spare_temp_sensor_linkquality:
+  hidden: true
+sensor.pir_sensor_battery:
+  hidden: true
+sensor.router_linkquality:
+  hidden: true
+sensor.button1_click:
+  hidden: true
+sensor.motion_sensor_linkquality:
+  hidden: true
+sensor.pir_sensor_linkquality:
+  hidden: true
+sensor.marc_iphone_battery_level:
+  hidden: true
+sensor.marc_iphone_battery_state:
+  hidden: true
