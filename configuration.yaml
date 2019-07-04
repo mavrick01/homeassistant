@@ -9,6 +9,12 @@ default_config:
 # Include customizations and all my packages
 
 homeassistant:
+  latitude: -37.92951510740928
+  longitude: 145.01394010148945
+  elevation: 30
+  unit_system: metric
+  time_zone: Australia/Melbourne
+  name: Home
   customize: !include customize.yaml
   packages: !include_dir_named packages/
 
