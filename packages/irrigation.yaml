@@ -1,0 +1,665 @@
+########################################
+#
+#   This is a full irrigationulation
+#   control package using DarkSky
+#   weather prediction to
+#   prevent watering if rain
+#   is expected, or occured recently
+#   with local moisture sensor data
+#   as well
+#
+#
+########################################
+
+#=============
+#=== Switches
+#=============
+switch:
+
+  # sonoff (4ch relay)
+  # irrigation_station 1
+  - platform: mqtt
+    name: "irrigation_station_1_valve"
+    state_topic: "stat/irrigation/POWER1"
+    command_topic: "cmnd/irrigation/power1"
+    availability_topic: "tele/irrigation/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+    icon: mdi:water-pump
+
+  # irrigation_station 2
+  - platform: mqtt
+    name: "irrigation_station_2_valve"
+    state_topic: "stat/irrigation/POWER2"
+    command_topic: "cmnd/irrigation/power2"
+    availability_topic: "tele/irrigation/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+    icon: mdi:water-pump
+
+  # irrigation_station 3
+  - platform: mqtt
+    name: "irrigation_station_3_valve"
+    state_topic: "stat/irrigation/POWER3"
+    command_topic: "cmnd/irrigation/power3"
+    availability_topic: "tele/irrigation/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+    icon: mdi:water-pump
+
+  # irrigation_station 4
+  - platform: mqtt
+    name: "irrigation_station_4_valve"
+    state_topic: "stat/irrigation/POWER4"
+    command_topic: "cmnd/irrigation/power4"
+    availability_topic: "tele/irrigation/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: true
+    icon: mdi:water-pump
+
+#=============
+#=== Sensors
+#=============
+sensor:
+  - platform: template    # determine if today is selected as a watering day for program 1
+    sensors:
+      irrigation_program1_watering_day:
+        value_template:  >
+          {% set sensor_names = [ 'monday', 'tuesday', 'wednesday','thursday','friday','saturday','sunday'] %}
+          {% set today_name = sensor_names[now().weekday()] %}
+          {% set entity_id = 'input_boolean.irrigation_program1_'+today_name %}
+          {{ is_state(entity_id, 'on') }}
+
+      irrigation_program2_watering_day:
+        value_template:  >
+          {% set sensor_names = [ 'monday', 'tuesday', 'wednesday','thursday','friday','saturday','sunday'] %}
+          {% set today_name = sensor_names[now().weekday()] %}
+          {% set entity_id = 'input_boolean.irrigation_program2_'+today_name %}
+          {{ is_state(entity_id, 'on') }}
+
+
+#   Calculations for rain to stop irrigationulation
+
+#=============
+#=== Date Inputs
+#=============
+input_datetime:
+  irrigation_program1_start_time:    # program start time control
+    name: Program 1 Start Time
+    has_date: false
+    has_time: true
+
+  irrigation_program2_start_time:
+    name: Program 2 Start Time
+    has_date: false
+    has_time: true
+
+#=============
+#=== Number Inputs
+#=============
+input_number:
+  irrigation_program1_station1_run_time:   # station run time control
+    name: Station 1 Run Time
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+
+  irrigation_program1_station2_run_time:
+    name: Station 2 Run Time
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+  
+  irrigation_program1_station3_run_time:
+    name: Station 3 Run Time
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+  
+  irrigation_program1_station4_run_time:
+    name: Station 4 Run Time
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+  
+  irrigation_program2_station1_run_time:
+    name: Station 1 Run Time
+#    initial: 10
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+
+  irrigation_program2_station2_run_time:
+    name: Station 2 Run Time
+#    initial: 10
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+
+  irrigation_program2_station3_run_time:
+    name: Station 3 Run Time
+#    initial: 10
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+
+  irrigation_program2_station4_run_time:
+    name: Station 4 Run Time
+#    initial: 10
+    min: 0
+    max: 30
+    step: 1
+    icon: mdi:camera-timer
+
+#=============
+#=== Binary Sensors - needed to change icon for Input_Boolean
+#=============
+binary_sensor:
+  - platform: template
+    sensors:
+      program1_monday:
+        friendly_name: P1 Monday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_monday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_monday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_tuesday:
+        friendly_name: P1 Tuesday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_tuesday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_tuesday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_wednesday:
+        friendly_name: P1 Wednesday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_wednesday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_wednesday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_thursday:
+        friendly_name: P1 Thursday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_thursday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_thursday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_friday:
+        friendly_name: P1 Friday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_friday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_friday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_saturday:
+        friendly_name: P1 Saturday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_saturday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_saturday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program1_sunday:
+        friendly_name: P1 Sunday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program1_sunday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program1_sunday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+
+  - platform: template
+    sensors:
+      program2_monday:
+        friendly_name: P2 Monday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_monday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_monday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_tuesday:
+        friendly_name: P2 Tuesday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_tuesday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_tuesday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_wednesday:
+        friendly_name: P2 Wednesday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_wednesday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_wednesday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_thursday:
+        friendly_name: P2 Thursday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_thursday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_thursday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_friday:
+        friendly_name: P2 Friday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_friday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_friday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_saturday:
+        friendly_name: P2 Saturday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_saturday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_saturday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+  - platform: template
+    sensors:
+      program2_sunday:
+        friendly_name: P2 Sunday
+        value_template: >- 
+          {%- if is_state("input_boolean.irrigation_program2_sunday", "on") -%}
+          true
+          {%- else -%}
+          false
+          {%- endif -%} 
+        icon_template: >
+          {% if is_state("input_boolean.irrigation_program2_sunday", "on") %}
+            mdi:water
+          {% else %}
+            mdi:water-off
+          {% endif %}
+
+#=============
+#=== Input_Boolean 
+#=============
+input_boolean:
+  irrigation_program1_monday:   # watering day selections for program 1
+    name: Monday
+  irrigation_program1_tuesday:
+    name: Tuesday
+  irrigation_program1_wednesday:
+    name: Wednesday
+  irrigation_program1_thursday:
+    name: Thursday
+  irrigation_program1_friday:
+    name: Friday
+  irrigation_program1_saturday:
+    name: Saturday
+  irrigation_program1_sunday:
+    name: Sunday
+  
+  irrigation_program2_monday:   # watering day selections for program 2
+    name: Monday
+  irrigation_program2_tuesday:
+    name: Tuesday
+  irrigation_program2_wednesday:
+    name: Wednesday
+  irrigation_program2_thursday:
+    name: Thursday
+  irrigation_program2_friday:
+    name: Friday
+  irrigation_program2_saturday:
+    name: Saturday
+  irrigation_program2_sunday:
+    name: Sunday
+  irrigation_program1_enable:
+    name: Enable
+  irrigation_program2_enable:
+    name: Enable
+
+#=============
+#=== Groups
+#=============
+group:                  # frontend interface setup
+  irrigation_manual:
+    control: hidden
+    name: 'Manual Control'
+    entities:
+      - switch.irrigation_station_1_valve
+      - switch.irrigation_station_2_valve
+      - switch.irrigation_station_3_valve
+      - switch.irrigation_station_4_valve
+
+  irrigation_program1:
+    control: hidden
+    name: 'Program 1'
+    entities:
+      - input_boolean.irrigation_program1_enable
+      - script.irrigation_program1_run
+      - input_datetime.irrigation_program1_start_time
+      - group.irrigation_program1_watering_days
+      - group.irrigation_program1_run_times
+
+  irrigation_program2:
+    control: hidden
+    name: 'Program 2'
+    entities:
+      - input_boolean.irrigation_program2_enable
+      - script.irrigation_program2_run
+      - input_datetime.irrigation_program2_start_time
+      - group.irrigation_program2_watering_days
+      - group.irrigation_program2_run_times
+
+  irrigation_program1_watering_days:
+    control: hidden
+    name: 'Watering days'
+    icon: mdi:calendar-multiple-check
+    entities:
+      - input_boolean.irrigation_program1_monday
+      - input_boolean.irrigation_program1_tuesday
+      - input_boolean.irrigation_program1_wednesday
+      - input_boolean.irrigation_program1_thursday
+      - input_boolean.irrigation_program1_friday
+      - input_boolean.irrigation_program1_saturday
+      - input_boolean.irrigation_program1_sunday
+
+  irrigation_program2_watering_days:
+    control: hidden
+    name: 'Watering days'
+    icon: mdi:calendar-multiple-check
+    entities:
+      - input_boolean.irrigation_program2_monday
+      - input_boolean.irrigation_program2_tuesday
+      - input_boolean.irrigation_program2_wednesday
+      - input_boolean.irrigation_program2_thursday
+      - input_boolean.irrigation_program2_friday
+      - input_boolean.irrigation_program2_saturday
+      - input_boolean.irrigation_program2_sunday
+
+  irrigation_program1_run_times:
+    control: hidden
+    name: 'Run times'
+    icon: mdi:camera-timer
+    entities:
+      - input_number.irrigation_program1_station1_run_time
+      - input_number.irrigation_program1_station2_run_time
+      - input_number.irrigation_program1_station3_run_time
+      - input_number.irrigation_program1_station4_run_time
+
+  irrigation_program2_run_times:
+    control: hidden
+    name: 'Run times'
+    icon: mdi:camera-timer
+    entities:
+      - input_number.irrigation_program2_station1_run_time
+      - input_number.irrigation_program2_station2_run_time
+      - input_number.irrigation_program2_station3_run_time
+      - input_number.irrigation_program2_station4_run_time
+
+#=============
+#=== Automation to trigger irrigation
+#=============
+automation:
+#  - alias: Irrigate_all_stations
+#    trigger:
+#      platform: template
+#      value_template: '{{ states.sensor.time.state == (states.input_datetime.w_start_time.attributes.timestamp | int | timestamp_custom("%H:%M", False)) }}'
+#    action:
+#      - service: switch.turn_on
+#        entity_id: switch.irrigation_station_1_valve
+#      - service: timer.start
+#        data_template:
+#          entity_id: timer.irrigation_station_1
+#          duration: '00:00:{{ states.input_number.irrigation_program1_station1_run_time.state | int }}'
+#
+#  - alias: Stop_Irrigate_all_stations
+#    trigger:
+#      platform: event
+#      event_type: timer.finished
+#      event_data:
+#        entity_id: timer.irrigation_station_1
+#    action:
+#      service: switch.turn_off
+#      entity_id: switch.irrigation_station_1_valve
+  - alias:  Run Program 1     # start program 1 at designated time if it is enabled and today is selected as a watering day
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: '{{ states.sensor.time.state == (states.input_datetime.irrigation_program1_start_time.attributes.timestamp | int | timestamp_custom("%H:%M", False)) }}'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.irrigation_program1_enable
+          state: 'on'
+        - condition: state
+          entity_id: sensor.irrigation_program1_watering_day
+          state: 'true'
+    action:
+      - service: script.turn_on
+        entity_id: script.irrigation_program1_run
+  - alias:  Run Program 2     # start program 2 at designated time if it is enabled and today is selected as a watering day
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: '{{ states.sensor.time.state == (states.input_datetime.irrigation_program2_start_time.attributes.timestamp | int | timestamp_custom("%H:%M", False)) }}'
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.irrigation_program2_enable
+          state: 'on'
+        - condition: state
+          entity_id: sensor.irrigation_program2_watering_day
+          state: 'true'
+    action:
+      - service: script.turn_on
+        entity_id: script.irrigation_program2_run
+
+#=============
+#=== Script that does the irrigation
+#=============
+script:
+  irrigation_program1_run:             #run irrigation program 1 through each station for selected time
+    alias: Program 1 Run
+    sequence:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_1_valve
+      - delay: "00:{{ states('input_number.irrigation_program1_station1_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_1_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_2_valve
+      - delay: "00:{{ states('input_number.irrigation_program1_station2_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_2_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_3_valve
+      - delay: "00:{{ states('input_number.irrigation_program1_station3_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_3_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_4_valve
+      - delay: "00:{{ states('input_number.irrigation_program1_station4_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_4_valve
+
+  irrigation_program2_run:             #run irrigation program 2 through each station for selected time
+    alias: Program 2 Run
+    sequence:
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_1_valve
+      - delay: "00:{{ states('input_number.irrigation_program2_station1_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_1_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_2_valve
+      - delay: "00:{{ states('input_number.irrigation_program2_station2_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_2_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_3_valve
+      - delay: "00:{{ states('input_number.irrigation_program2_station3_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_3_valve
+      - service: switch.turn_on
+        data:
+          entity_id: switch.irrigation_station_4_valve
+      - delay: "00:{{ states('input_number.irrigation_program2_station4_run_time')|int }}:00"
+      - service: switch.turn_off
+        data:
+          entity_id: switch.irrigation_station_4_valve
+
+#=============
+#=== Tweaking the Valve names for visibility
+#=============
+homeassistant:
+  customize:
+    switch.irrigation_station_1_valve:
+      friendly_name: "Valve 1"
+    switch.irrigation_station_2_valve:
+      friendly_name: "Valve 2"
+    switch.irrigation_station_3_valve:
+      friendly_name: "Valve 3"
+    switch.irrigation_station_4_valve:
+      friendly_name: "Valve 4"
+
